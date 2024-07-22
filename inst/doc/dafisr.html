@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -353,18 +353,18 @@ The latter corrects several inconsistencies within the raw data. If you
 have any suggestion or spot some errors we will be very pleased if you
 create an issue.</p>
 <p>The function below downloads data from the year 2019.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dafishr)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">vms_download</span>(<span class="at">year =</span> <span class="dv">2019</span>, <span class="at">destination.folder =</span> <span class="fu">getwd</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(dafishr)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">vms_download</span>(<span class="at">year =</span> <span class="dv">2019</span>, <span class="at">destination.folder =</span> <span class="fu">getwd</span>())</span></code></pre></div>
 </div>
 <div id="using-the-cleaning-functions" class="section level2">
 <h2>Using the cleaning functions</h2>
 <p>The first <code>vms_clean()</code> function works on the VMS
 <code>data.frame</code>. You can either load downloaded data or use the
 <code>sample_dataset</code> that you can call and clean like so:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dafishr)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;sample_dataset&quot;</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>vms_cleaned <span class="ot">&lt;-</span> <span class="fu">vms_clean</span>(sample_dataset)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(dafishr)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;sample_dataset&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>vms_cleaned <span class="ot">&lt;-</span> <span class="fu">vms_clean</span>(sample_dataset)</span></code></pre></div>
 <p>The <code>vms_clean()</code> function returns a message with the
 number of rows that were cleaned because they contained
 <code>NULL</code> values in coordinates.</p>
@@ -377,8 +377,8 @@ eliminated. This is because VMS data are vessels, thus points falling
 inland are errors in data registration. For that we will upload the
 <code>mx_inland</code> shapefile which helps eliminating all the points
 within a certain distance from the coastline.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;mx_inland&quot;</span>) <span class="co"># Shapefile of inland Mexico area</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>vms_cleaned_land <span class="ot">&lt;-</span> <span class="fu">clean_land_points</span>(vms_cleaned, mx_inland)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;mx_inland&quot;</span>) <span class="co"># Shapefile of inland Mexico area</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>vms_cleaned_land <span class="ot">&lt;-</span> <span class="fu">clean_land_points</span>(vms_cleaned, mx_inland)</span></code></pre></div>
 <div id="associating-port-data" class="section level3">
 <h3>Associating port data</h3>
 <p>Once all land points are eliminated, we can use the
@@ -389,26 +389,26 @@ around each port or marina location. Then each VMS point that falls
 within these buffers will be labelled as <code>at_port</code> or
 <code>at_sea</code> in a new column that will be automatically called
 <code>location</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;mx_ports&quot;</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># If you are just testing, it is a good idea to subsample...</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># it takes a while on the full data!</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>vms_subset <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">sample_n</span>(vms_cleaned, <span class="dv">1000</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>with_ports <span class="ot">&lt;-</span> <span class="fu">join_ports_locations</span>(vms_subset)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;mx_ports&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># If you are just testing, it is a good idea to subsample...</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># it takes a while on the full data!</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>vms_subset <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">sample_n</span>(vms_cleaned, <span class="dv">1000</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>with_ports <span class="ot">&lt;-</span> <span class="fu">join_ports_locations</span>(vms_subset)</span></code></pre></div>
 <p>Now we can check the results in a map:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>with_ports_sf <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(with_ports,</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>),</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                              <span class="at">crs =</span> <span class="dv">4326</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;mx_shape&quot;</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(mx_shape) <span class="sc">+</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">col =</span> <span class="st">&quot;gray90&quot;</span>) <span class="sc">+</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> with_ports_sf, <span class="fu">aes</span>(<span class="at">col =</span> location)) <span class="sc">+</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> location) <span class="sc">+</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>with_ports_sf <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_as_sf</span>(with_ports,</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>                              <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>),</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>                              <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;mx_shape&quot;</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(mx_shape) <span class="sc">+</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">col =</span> <span class="st">&quot;gray90&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> with_ports_sf, <span class="fu">aes</span>(<span class="at">col =</span> location)) <span class="sc">+</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> location) <span class="sc">+</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
 </div>
 </div>
 
